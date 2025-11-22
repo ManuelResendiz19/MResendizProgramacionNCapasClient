@@ -99,98 +99,98 @@
                             <div class="card-body">
                                 <h3 style="text-align: center; color : white;">Usuario</h3>
                                 <i class="bi bi-person-check-fill fw-bold" style="color : white"> Nombre:</i>
-                                <p class="card-text fw-bold" th:text="${usuario.Nombre}" style="color : white"></p>
+                                <p class="card-text fw-bold" th:text="${usuario.nombre}" style="color : white"></p>
                                 <ul>
                                     <i class="bi bi-person-lines-fill fw-bold" style="color : white"> Apellido Paterno:</i>
-                                    <p class="card-text fw-bold" th:text="${usuario.ApellidoPaterno}" style="color : white"></p>
+                                    <p class="card-text fw-bold" th:text="${usuario.apellidoPaterno}" style="color : white"></p>
                                     <i class="bi bi-person-lines-fill fw-bold" style="color : white"> Apellido Materno:</i>
-                                    <p class="card-text fw-bold" th:text="${usuario.ApellidoMaterno}" style="color : white"></p>
+                                    <p class="card-text fw-bold" th:text="${usuario.apellidoMaterno}" style="color : white"></p>
                                     <i class="bi bi-person-lines-fill fw-bold" style="color : white"> Fecha Nacimiento:</i>
-                                    <p class="card-text fw-bold" th:text="${usuario.FechaNacimiento}" style="color : white"></p>
+                                    <p class="card-text fw-bold" th:text="${usuario.fechaNacimiento}" style="color : white"></p>
                                 </ul>
                                 <i class="bi bi-person-circle fw-bold" style="color : white"> User Name:</i>
-                                <p class="card-text fw-bold" th:text="${usuario.UserName}" style="color : white"></p>
+                                <p class="card-text fw-bold" th:text="${usuario.userName}" style="color : white"></p>
 
                                 <i class="bi bi-envelope fw-bold" style="color : white"> Email:</i>
-                                <p class="card-text fw-bold" th:text="${usuario.Email}" style="color : white"></p>
+                                <p class="card-text fw-bold" th:text="${usuario.email}" style="color : white"></p>
 
                                 <i class="bi bi-gender-ambiguous fw-bold" style="color : white"> Sexo:</i>
-                                <p class="card-text fw-bold" th:text="${usuario.Sexo}" style="color : white"></p>
+                                <p class="card-text fw-bold" th:text="${usuario.sexo}" style="color : white"></p>
 
                                 <i class="bi bi-telephone fw-bold" style="color : white"> Telefono:</i>
-                                <p class="card-text fw-bold" th:text="${usuario.Telefono}" style="color : white"></p>
+                                <p class="card-text fw-bold" th:text="${usuario.telefono}" style="color : white"></p>
 
                                 <i class="bi bi-phone fw-bold" style="color : white"> Celular:</i>
-                                <p class="card-text fw-bold" th:text="${usuario.Celular}" style="color : white"></p>
+                                <p class="card-text fw-bold" th:text="${usuario.celular}" style="color : white"></p>
 
                                 <i class="bi bi-person-fill-lock fw-bold" style="color : white"> CURP:</i>
-                                <p class="card-text fw-bold" th:text="${usuario.CURP}" style="color : white"></p>
+                                <p class="card-text fw-bold" th:text="${usuario.curp}" style="color : white"></p>
 
                                 <button type="button" class="gradient_anim_btn" data-bs-toggle="modal" data-bs-target="#formModal">Editar Usuario</button>
                             </div>
-                            <!--  Formulario con un modal -->
+
                             <div class="modal fade" id="formModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                <div class="modal-dialog modal-lg"> <!-- modal más ancho -->
+                                <div class="modal-dialog modal-lg"> 
                                     <div class="modal-content">
-                                        <form th:action="@{/usuario/detail}" method="post" th:object="${usuario}">
+                                        <form th:action="@{/usuario/detail}" method="post"  th:object="${usuario}">
                                             <div class="modal-header">
                                                 <h5 class="modal-title" id="exampleModalLabel">Editar Usuario</h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                                             </div>
                                             <div class="modal-body">
 
-                                                <div class="row g-3"> <!-- fila con separación entre campos -->
+                                                <div class="row g-3"> 
 
                                                     <div>
                                                         <input type="hidden" th:field="*{IdUsuario}">
                                                     </div>
-                                                    <!-- Nombre -->
+                                                     
                                                     <div class="col-md-6">
                                                         <label for="nombre" class="form-label">Nombre</label>
                                                         <input type="text" class="form-control" name="nombre" th:field="*{Nombre}" placeholder="Pablito">
                                                     </div>
 
-                                                    <!-- Apellido Paterno -->
+                                                    
                                                     <div class="col-md-6">
                                                         <label for="apellidopaterno" class="form-label">Apellido Paterno</label>
                                                         <input type="text" class="form-control" name="apellidopaterno" th:field="*{ApellidoPaterno}">
                                                     </div>
 
-                                                    <!-- Apellido Materno -->
+                                                      
                                                     <div class="col-md-6">
                                                         <label for="apellidomaterno" class="form-label">Apellido Materno</label>
                                                         <input type="text" class="form-control" name="apellidomaterno" th:field="*{ApellidoMaterno}">
                                                     </div>
 
-                                                    <!-- Fecha de Nacimiento -->
+                                                     
                                                     <div class="col-md-6">
                                                         <label for="FechaNacimiento" class="form-label">Fecha de Nacimiento</label>
                                                         <input type="date" class="form-control" name="FechaNacimiento" th:field="*{FechaNacimiento}" onblur="FechaNacimientoVerd(event,this)">
-                                                        <span th:if="${#fields.hasErrors('FechaNacimiento')}" th:errors="*{FechaNacimiento}" class="text-danger"></span>
+<!--                                                        <span th:if="${#fields.hasErrors('FechaNacimiento')}" th:errors="*{FechaNacimiento}" class="text-danger"></span>-->
                                                     </div>
 
-                                                    <!-- Teléfono -->
+                                                     
                                                     <div class="col-md-6">
                                                         <label for="Telefono" class="form-label">Teléfono</label>
                                                         <input type="text" class="form-control" id="Telefono" name="Telefono" th:field="*{Telefono}" placeholder="1279036391" onblur="TelVerd(event,this)">
                                                         <span th:if="${#fields.hasErrors('Telefono')}" th:errors="*{Telefono}" class="text-danger"></span>
                                                     </div>
 
-                                                    <!-- Celular -->
+                                                    
                                                     <div class="col-md-6">
                                                         <label for="Celular" class="form-label">Celular</label>
                                                         <input type="text" class="form-control" name="Celular" th:field="*{Celular}" placeholder="56172936338">
                                                         <span th:if="${#fields.hasErrors('Celular')}" th:errors="*{Celular}" class="text-danger"></span>
                                                     </div>
 
-                                                    <!-- Email -->
+                                                     
                                                     <div class="col-md-12">
                                                         <label for="Email" class="form-label">Email</label>
                                                         <input type="email" class="form-control" name="Email" th:field="*{Email}" placeholder="ejemplo@gmail.com">
                                                         <span th:if="${#fields.hasErrors('Email')}" th:errors="*{Email}" class="text-danger"></span>
                                                     </div>
 
-                                                    <!-- Sexo -->
+                                                     
                                                     <div class="col-md-6">
                                                         <label for="Sexo" class="form-label">Sexo</label>
                                                         <select class="form-select" name="sexo" id="sexo-select" th:field="*{Sexo}">
@@ -199,18 +199,25 @@
                                                         </select>
                                                     </div>
 
-                                                    <!-- User Name -->
+                                                     
                                                     <div class="col-md-6">
                                                         <label for="UserName" class="form-label">User Name</label>
                                                         <input type="text" class="form-control" name="username" th:field="*{UserName}" placeholder="cr43">
                                                         <span th:if="${#fields.hasErrors('UserName')}" th:errors="*{UserName}" class="text-danger"></span>
                                                     </div>
 
-                                                    <!-- CURP -->
+                                                     
                                                     <div class="col-md-12">
                                                         <label for="curp" class="form-label">CURP</label>
-                                                        <input type="text" class="form-control" name="curp" th:field="*{CURP}">
-                                                        <span th:if="${#fields.hasErrors('CURP')}" th:errors="*{CURP}" class="text-danger"></span>
+                                                        <input type="text" class="form-control" name="curp" th:field="*{curp}">
+                                                        <!--                                                        <span th:if="${#fields.hasErrors('CURP')}" th:errors="*{curp}" class="text-danger"></span>-->
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label class="form-label fw-semibold">Rol</label>
+                                                        <select class="form-select" name="rol" th:field="${usuario.Rol.IdRols}">
+                                                            <option value="0" selected>Selecciona un Rol</option>
+                                                            <option th:each="rol : ${Rols}" th:value="${rol.IdRols}" th:text="${rol.NombreRol}"></option>
+                                                        </select>
                                                     </div>
 
                                                 </div>
@@ -264,7 +271,7 @@
 
 
 
-                            <!-- Modal -->
+<!--                             Modal 
                             <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
@@ -336,7 +343,7 @@
                             </div>
 
                             
-                        </div>
+                        </div>-->
                         
                         
                         

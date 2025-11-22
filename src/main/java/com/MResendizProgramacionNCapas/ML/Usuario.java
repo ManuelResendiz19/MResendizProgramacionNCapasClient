@@ -34,7 +34,7 @@ public class Usuario {
     private String ApellidoMaterno;
     
 //    @Past(message = "La fecha de Nacimiento debe ser menor a la actual")
-//    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonProperty("fechaNacimiento")
     private Date FechaNacimiento;
     
@@ -193,11 +193,11 @@ public class Usuario {
         return Celular;
     }
     
-    public void setCURP(String CURP){
+    public void setCurp(String CURP){
         this.CURP = CURP;
     }
     
-    public String getCURP(){
+    public String getCurp(){
         return CURP;
     }
 

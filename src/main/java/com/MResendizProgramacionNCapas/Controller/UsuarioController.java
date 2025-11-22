@@ -27,8 +27,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
@@ -58,6 +61,36 @@ public class UsuarioController {
     }
     
     
+    @GetMapping("/detail/{IdUsuario}")
+    public String Detail(@PathVariable("IdUsuario") int IdUsuario, Model model) {
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity <Result<Usuario>> responseEntity = restTemplate.exchange(urlBase + "/api/usuario/" + IdUsuario, HttpMethod.GET
+        ,HttpEntity.EMPTY, 
+        new ParameterizedTypeReference<Result<Usuario>>() {});
+        
+        if(responseEntity.getStatusCode().value() == 200){
+            Result<Usuario> result = responseEntity.getBody();
+            model.addAttribute("usuario", result.object);
+        }
+        
+        
+        return "UsuarioDetail";
+    }
+    
+    
+    
+   @PostMapping("/detail")
+    public String Detail(@ModelAttribute Usuario usuario){
+        RestTemplate restTemplate = new RestTemplate();
+        
+        HttpEntity<Usuario> requeEntity = new HttpEntity<>(usuario);
+        
+        ResponseEntity <Result<Usuario>> responseEntity = restTemplate.exchange(urlBase + "/api/usuario/update", HttpMethod.PUT, 
+                requeEntity, new ParameterizedTypeReference<Result<Usuario>>() {
+                });
+        
+        return "redirect:/usuario/detail/" + usuario.getIdUsuario();
+    }
     
     
 }
