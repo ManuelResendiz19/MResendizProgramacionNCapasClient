@@ -71,12 +71,14 @@ public class UsuarioController {
     @PostMapping("/usuarioSearch")
     public String Index(@ModelAttribute Usuario usuario,Model model){
         
-        model.addAttribute("usuario", new Usuario());
+        model.addAttribute("usuarioBusqueda", new Usuario());
+        
+        String busqueda = usuario.getNombre();
         
         RestTemplate restTemplate = new RestTemplate();
         HttpEntity<Usuario> requeEntity = new HttpEntity<>(usuario);
         
-        ResponseEntity<Result<List<Usuario>>> responseEntity = restTemplate.exchange(urlBase + "/api/usuario/busqueda?busqueda=" , HttpMethod.GET
+        ResponseEntity<Result<List<Usuario>>> responseEntity = restTemplate.exchange(urlBase + "/api/usuario/busqueda?busqueda=" + busqueda , HttpMethod.GET
         ,requeEntity, 
         new ParameterizedTypeReference<Result<List<Usuario>>>() {});
         
