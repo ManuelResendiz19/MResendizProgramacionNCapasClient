@@ -15,22 +15,22 @@
     <!-- Botón Agregar -->
     <div class="d-grid gap-2 col-6 mx-auto mb-4">
         <a th:href="@{/usuario/add}" class="btn btn-success btn-lg shadow-sm"><i class="bi bi-person-fill-add"> Agregar</i></a>
-        <a th:href="@{/usuario/bulkUpload}" class="btn btn-danger"><i class="bi bi-file-earmark-plus-fill"> Carga Masiva</i></a>
+<!--        <a th:href="@{/usuario/bulkUpload}" class="btn btn-danger"><i class="bi bi-file-earmark-plus-fill"> Carga Masiva</i></a>-->
     </div>
 
 <!--     Formulario de búsqueda 
-    <div class="card mb-4 shadow-sm">
+-->    <div class="card mb-4 shadow-sm">
         <div class="card-body">
-            <form method="post" th:action="@{/usuarioSearch}" th:object="${usuario}">
+            <form method="post" th:action="@{usuario/usuarioSearch}" th:object="${usuarioBusqueda}">
                 <div class="row g-3 align-items-center">
                     <div class="col">
-                        <input type="text" name="nombre" th:field="*{Nombre}" class="form-control" placeholder="Nombre">
+                        <input type="text" name="nombre" th:field="*{nombre}" class="form-control" placeholder="Nombre">
                     </div>
                     <div class="col">
-                        <input type="text" name="apellidopaterno" th:field="*{ApellidoPaterno}" class="form-control" placeholder="Cortez">
+                        <input type="text" name="apellidopaterno" th:field="*{apellidoPaterno}" class="form-control" placeholder="Cortez">
                     </div>
                     <div class="col">
-                        <input type="text" name="apellidomaterno" th:field="*{ApellidoMaterno}" class="form-control" placeholder="Dominguez">
+                        <input type="text" name="apellidomaterno" th:field="*{apellidoMaterno}" class="form-control" placeholder="Dominguez">
                     </div>
                     <div class="col-auto">
                         <button type="submit" class="btn btn-primary">Buscar</button>
@@ -38,7 +38,7 @@
                 </div>
             </form>
         </div>
-    </div>-->
+    </div>
 
     <!-- Tabla de usuarios -->
     <div class="arriba">

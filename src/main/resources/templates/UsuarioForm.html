@@ -30,51 +30,51 @@
           <div class="row g-3">
             <div class="col-md-4">
               <label for="nombre" class="form-label fw-semibold">Nombre</label>
-              <input type="text" class="form-control" name="nombre" th:field="*{Nombre}" placeholder="Pablito">
+              <input type="text" class="form-control" name="nombre" th:field="*{nombre}" placeholder="Pablito">
               <span class="error-msg text-danger"></span>
-              <span th:if="${#fields.hasErrors('Nombre')}" th:errors="*{Nombre}" class="text-danger"></span>
+              <span th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}" class="text-danger"></span>
             </div>
 
             <div class="col-md-4">
               <label for="apellidopaterno" class="form-label fw-semibold">Apellido Paterno</label>
-              <input type="text" class="form-control" name="apellidopaterno" th:field="*{ApellidoPaterno}" placeholder="Cortez" onblur="SoloLetras(event,this)">
-              <span th:if="${#fields.hasErrors('ApellidoPaterno')}" th:errors="*{ApellidoPaterno}" class="text-danger"></span>
+              <input type="text" class="form-control" name="apellidopaterno" th:field="*{apellidoPaterno}" placeholder="Cortez" onblur="SoloLetras(event,this)">
+              <span th:if="${#fields.hasErrors('apellidoPaterno')}" th:errors="*{apellidoPaterno}" class="text-danger"></span>
             </div>
 
             <div class="col-md-4">
               <label for="apellidomaterno" class="form-label fw-semibold">Apellido Materno</label>
-              <input type="text" class="form-control" name="apellidomaterno" th:field="*{ApellidoMaterno}" placeholder="Dominguez" onblur="SoloLetras(event,this)">
-              <span th:if="${#fields.hasErrors('ApellidoMaterno')}" th:errors="*{ApellidoMaterno}" class="text-danger"></span>
+              <input type="text" class="form-control" name="apellidomaterno" th:field="*{apellidoMaterno}" placeholder="Dominguez" onblur="SoloLetras(event,this)">
+              <span th:if="${#fields.hasErrors('apellidoMaterno')}" th:errors="*{apellidoMaterno}" class="text-danger"></span>
             </div>
 
             <div class="col-md-3">
               <label class="form-label fw-semibold">Fecha Nacimiento</label>
-              <input type="date" class="form-control" name="FechaNacimiento" th:field="*{FechaNacimiento}">
+              <input type="date" class="form-control" name="FechaNacimiento" th:field="*{fechaNacimiento}">
             </div>
 
             <div class="col-md-3">
               <label class="form-label fw-semibold">Teléfono</label>
-              <input type="text" class="form-control" name="Telefono" th:field="*{Telefono}" placeholder="1279036391">
+              <input type="text" class="form-control" name="Telefono" th:field="*{telefono}" placeholder="1279036391">
             </div>
 
             <div class="col-md-3">
               <label class="form-label fw-semibold">Celular</label>
-              <input type="text" class="form-control" name="Celular" th:field="*{Celular}" placeholder="56172936338">
+              <input type="text" class="form-control" name="Celular" th:field="*{celular}" placeholder="56172936338">
             </div>
 
             <div class="col-md-3">
               <label class="form-label fw-semibold">Email</label>
-              <input type="text" class="form-control" name="Email" th:field="*{Email}" placeholder="correo@gmail.com">
+              <input type="text" class="form-control" name="Email" th:field="*{email}" placeholder="correo@gmail.com">
             </div>
 
             <div class="col-md-4">
               <label class="form-label fw-semibold">Password</label>
-              <input type="password" class="form-control" name="password" th:field="*{Password}">
+              <input type="password" class="form-control" name="password" th:field="*{password}">
             </div>
 
             <div class="col-md-4">
               <label class="form-label fw-semibold">Sexo</label>
-              <select class="form-select" name="sexo" th:field="*{Sexo}">
+              <select class="form-select" name="sexo" th:field="*{sexo}">
                 <option value="">Seleccione</option>
                 <option value="MS">MS</option>
                 <option value="FM">FM</option>
@@ -83,19 +83,19 @@
 
             <div class="col-md-4">
               <label class="form-label fw-semibold">User Name</label>
-              <input type="text" class="form-control" name="username" th:field="*{UserName}" placeholder="cr43">
+              <input type="text" class="form-control" name="username" th:field="*{userName}" placeholder="cr43">
             </div>
 
             <div class="col-md-4">
               <label class="form-label fw-semibold">CURP</label>
-              <input type="text" class="form-control" name="curp" th:field="*{CURP}">
+              <input type="text" class="form-control" name="curp" th:field="*{curp}">
             </div>
               
               <div class="col-md-4">
               <label class="form-label fw-semibold">Rol</label>
               <select class="form-select" name="rol" th:field="${Usuario.Rol.IdRols}">
                 <option value="0" selected>Selecciona un Rol</option>
-                <option th:each="rol : ${Rols}" th:value="${rol.IdRols}" th:text="${rol.NombreRol}"></option>
+                <option th:each="rol : ${Rols}" th:value="${rol.idRols}" th:text="${rol.nombreRol}"></option>
               </select>
             </div>
           </div>
@@ -105,48 +105,48 @@
           <div class="row g-3">
             <div class="col-md-4">
               <label class="form-label fw-semibold">Calle</label>
-              <input type="text" class="form-control" name="calle" th:field="*{Direcciones[0].Calle}">
+              <input type="text" class="form-control" name="calle" th:field="*{Direcciones[0].calle}">
             </div>
 
             <div class="col-md-4">
               <label class="form-label fw-semibold">Número Exterior</label>
-              <input type="text" class="form-control" name="numeroexterior" th:field="*{Direcciones[0].NumeroExterior}">
+              <input type="text" class="form-control" name="numeroexterior" th:field="*{Direcciones[0].numeroExterior}">
             </div>
 
             <div class="col-md-4">
               <label class="form-label fw-semibold">Número Interior</label>
-              <input type="text" class="form-control" name="numerointerior" th:field="*{Direcciones[0].NumeroInterior}">
+              <input type="text" class="form-control" name="numerointerior" th:field="*{Direcciones[0].numeroInterior}">
             </div>
 
             <div class="col-md-4">
               <label class="form-label fw-semibold">País</label>
-              <select class="form-select" id="ddlpais" th:field="*{Direcciones[0].Colonia.Municipio.Estado.Pais.IdPais}">
+              <select class="form-select" id="ddlpais" th:field="*{Direcciones[0].Colonia.Municipio.Estado.Pais.idPais}">
                 <option value="0" selected>Selecciona un País</option>
-                <option th:each="pais : ${Paises}" th:value="${pais.idPais}" th:text="${pais.Nombre}"></option>
+                <option th:each="pais : ${pais}" th:value="${pais.idPais}" th:text="${pais.nombre}"></option>
               </select>
             </div>
 
             <div class="col-md-4">
               <label class="form-label fw-semibold">Estado</label>
-              <select class="form-select" id="ddlestado" th:field="*{Direcciones[0].Colonia.Municipio.Estado.IdEstado}">
+              <select class="form-select" id="ddlestado" th:field="*{Direcciones[0].Colonia.Municipio.Estado.idEstado}">
                 <option value="0" selected>Selecciona un Estado</option>
-                <option th:each="estado : ${Estados}" th:value="${estado.idPais}" th:text="${estado.Nombre}"></option>
+                <option th:each="estado : ${estados}" th:value="${estado.idPais}" th:text="${estado.nombre}"></option>
               </select>
             </div>
 
             <div class="col-md-4">
               <label class="form-label fw-semibold">Municipio</label>
-              <select class="form-select" id="ddlmunicipio" th:field="*{Direcciones[0].Colonia.Municipio.IdMunicipio}">
+              <select class="form-select" id="ddlmunicipio" th:field="*{Direcciones[0].Colonia.Municipio.idMunicipio}">
                 <option value="0" selected>Selecciona un Municipio</option>
-                <option th:each="municipio : ${municipio}" th:value="${municipio.idMunicipio}" th:text="${municipio.Nombre}"></option>
+                <option th:each="municipio : ${municipio}" th:value="${municipio.idMunicipio}" th:text="${municipio.nombre}"></option>
               </select>
             </div>
 
             <div class="col-md-4">
               <label class="form-label fw-semibold">Colonia</label>
-              <select class="form-select" id="ddlcolonia" th:field="*{Direcciones[0].Colonia.IdColonia}">
+              <select class="form-select" id="ddlcolonia" th:field="*{Direcciones[0].Colonia.idColonia}">
                 <option value="0" selected>Seleccione una Colonia</option>
-                <option th:each="colonia : ${colonias}" th:value="${colonia.idColonia}" th:text="${colonia.Nombre}"></option>
+                <option th:each="colonia : ${colonias}" th:value="${colonia.idColonia}" th:text="${colonia.nombre}"></option>
               </select>
             </div>
           </div>
@@ -215,9 +215,19 @@
                 
             </style>
             <script>
-
+                
                 $(document).ready(function(){
                 console.log("Ya estoy funcionando");
+                
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('success') === 'true') {
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: 'El usuario se agregó correctamente',
+                    confirmButtonText: 'Aceptar'
+                    });
+                }
                 
                 $("#ddlpais").change(function (){
                     $.ajax({

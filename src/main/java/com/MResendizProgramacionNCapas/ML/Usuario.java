@@ -80,8 +80,11 @@ public class Usuario {
     
     @JsonProperty("direccionesJPA")
     public List<Direccion> Direcciones; 
+    
     @JsonProperty("rolJPA")
     public Rol Rol;
+    
+    
     private String Imagen;
     
     public Usuario (){
