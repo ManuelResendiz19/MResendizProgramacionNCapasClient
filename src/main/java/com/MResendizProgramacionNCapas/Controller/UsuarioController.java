@@ -40,6 +40,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -126,8 +127,10 @@ public class UsuarioController {
     public String Form(Model model){
         
         Usuario usuario = new Usuario();
-        
+        usuario.Rol = new Rol();
+      
         model.addAttribute("Usuario", usuario);
+        
         
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<Result<List<Pais>>> responseEntityP = restTemplate.exchange(urlBase + "/api/pais" , 
@@ -145,9 +148,10 @@ public class UsuarioController {
         
         if(responseEntityR.getStatusCode().value() == 200){
             Result resultRol = (Result) responseEntityR.getBody();
-            model.addAttribute("rol", resultRol.object);
+            model.addAttribute("Rols", resultRol.object);
         }
         
+
         return "UsuarioForm";
     }
     
@@ -166,61 +170,72 @@ public class UsuarioController {
         
         if (responseRoles.getStatusCode().is2xxSuccessful()) {
             Result resultRol = responseRoles.getBody();
-            model.addAttribute("rols", resultRol.object);
+            model.addAttribute("Rols", resultRol.object);
         }
 
         
-        if (!usuario.getDirecciones().isEmpty()) {
-        Direccion dir = usuario.getDirecciones().get(0);
+////        if (!usuario.getDirecciones().isEmpty()) {
+////        Direccion dir = usuario.getDirecciones().get(0);
+////
+////        
+////        if (dir.getColonia().getMunicipio().getEstado().getPais().getIdPais() > 0) {
+////            ResponseEntity<Result<List<Estado>>> responseEstados = restTemplate.exchange(
+////                    urlBase + "/api/estado/" + dir.getColonia().getMunicipio().getEstado().getPais().getIdPais(),
+////                    HttpMethod.GET,
+////                    HttpEntity.EMPTY,
+////                    new ParameterizedTypeReference<Result<List<Estado>>>() {});
+////            
+////            if (responseEstados.getStatusCode().is2xxSuccessful()) {
+////                Result resultEstado = responseEstados.getBody();
+////                model.addAttribute("estados", resultEstado.object);
+////            }
+////
+////            
+////            if (dir.getColonia().getMunicipio().getEstado().getIdEstado() > 0) {
+////                ResponseEntity<Result<List<Municipio>>> responseMunicipios = restTemplate.exchange(
+////                        urlBase + "/api/municipio/" + dir.getColonia().getMunicipio().getEstado().getIdEstado(),
+////                        HttpMethod.GET,
+////                        HttpEntity.EMPTY,
+////                        new ParameterizedTypeReference<Result<List<Municipio>>>() {}
+////                );
+////                if (responseMunicipios.getStatusCode().is2xxSuccessful()) {
+////                    Result resultMunicipio = responseMunicipios.getBody();
+////                    model.addAttribute("municipios", resultMunicipio.object);
+////                }
+////
+////                
+////                if (dir.getColonia().getMunicipio().getIdMunicipio() > 0) {
+////                    ResponseEntity<Result<List<Colonia>>> responseColonias = restTemplate.exchange(
+////                            urlBase + "/api/colonia/" + dir.getColonia().getMunicipio().getIdMunicipio(),
+////                            HttpMethod.GET,
+////                            HttpEntity.EMPTY,
+////                            new ParameterizedTypeReference<Result<List<Colonia>>>() {}
+////                    );
+////                    if (responseColonias.getStatusCode().is2xxSuccessful()) {
+////                        Result resultColonia = responseColonias.getBody();
+////                        model.addAttribute("colonias", resultColonia.object);
+////                    }
+////                }
+////            }
+////        }
+////    }
+//      
+//        Direccion direccion = usuario.Direcciones.get(0);
+//        direccion.Colonia.setIdColonia(usuario.Direcciones.get(0).Colonia.getIdColonia());
+//        direccion.(usuario.Direcciones.get(0).Colonia.getIdColonia());
 
-        // País → Estado
-        if (dir.getColonia().getMunicipio().getEstado().getPais().getIdPais() > 0) {
-            ResponseEntity<Result<List<Estado>>> responseEstados = restTemplate.exchange(
-                    urlBase + "/api/estado/" + dir.getColonia().getMunicipio().getEstado().getPais().getIdPais(),
-                    HttpMethod.GET,
-                    HttpEntity.EMPTY,
-                    new ParameterizedTypeReference<Result<List<Estado>>>() {});
-            
-            if (responseEstados.getStatusCode().is2xxSuccessful()) {
-                Result resultEstado = responseEstados.getBody();
-                model.addAttribute("estados", resultEstado.object);
-            }
+        HttpEntity<Usuario> usuarioDirec = new HttpEntity<>(usuario);
+        ResponseEntity<Usuario> responseEntityDi = restTemplate.exchange(urlBase + "/api/usuario/add", 
+                HttpMethod.POST, usuarioDirec, new ParameterizedTypeReference<Usuario>(){
+                });
 
-            // Estado → Municipio
-            if (dir.getColonia().getMunicipio().getEstado().getIdEstado() > 0) {
-                ResponseEntity<Result<List<Municipio>>> responseMunicipios = restTemplate.exchange(
-                        urlBase + "/api/municipio/" + dir.getColonia().getMunicipio().getEstado().getIdEstado(),
-                        HttpMethod.GET,
-                        HttpEntity.EMPTY,
-                        new ParameterizedTypeReference<Result<List<Municipio>>>() {}
-                );
-                if (responseMunicipios.getStatusCode().is2xxSuccessful()) {
-                    Result resultMunicipio = responseMunicipios.getBody();
-                    model.addAttribute("municipios", resultMunicipio.object);
-                }
-
-                // Municipio → Colonia
-                if (dir.getColonia().getMunicipio().getIdMunicipio() > 0) {
-                    ResponseEntity<Result<List<Colonia>>> responseColonias = restTemplate.exchange(
-                            urlBase + "/api/colonia/" + dir.getColonia().getMunicipio().getIdMunicipio(),
-                            HttpMethod.GET,
-                            HttpEntity.EMPTY,
-                            new ParameterizedTypeReference<Result<List<Colonia>>>() {}
-                    );
-                    if (responseColonias.getStatusCode().is2xxSuccessful()) {
-                        Result resultColonia = responseColonias.getBody();
-                        model.addAttribute("colonias", resultColonia.object);
-                    }
-                }
-            }
-        }
-    }
-        HttpEntity<Usuario> usuarioEntity = new HttpEntity<>(usuario);
-
-        ResponseEntity<Usuario> responseEntity = restTemplate.exchange(urlBase + "/api/usuario/add",
-                HttpMethod.POST, usuarioEntity, new ParameterizedTypeReference<Usuario>() {
-        });
+         
+//        HttpEntity<Usuario> usuarioEntity = new HttpEntity<>(usuario);
+//        ResponseEntity<Usuario> responseEntity = restTemplate.exchange(urlBase + "/api/usuario/add",
+//                HttpMethod.POST, usuarioEntity, new ParameterizedTypeReference<Usuario>() {
+//        });
 
         return "redirect:/usuario";
-    }
+    } 
+    
 }

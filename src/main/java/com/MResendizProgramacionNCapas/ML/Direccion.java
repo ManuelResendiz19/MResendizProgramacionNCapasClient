@@ -16,6 +16,7 @@ public class Direccion {
     @JsonProperty("numeroExterior")
     private String NumeroExterior;
     
+//    @JsonProperty("ColoniaJPA")
     public Colonia Colonia;
     
     

@@ -1,10 +1,15 @@
 
 package com.MResendizProgramacionNCapas.ML;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 
 public class Estado {
 
+    @JsonProperty("idEstado")
     private int IdEstado;
+    
+    @JsonProperty("nombre")
     private String Nombre;
     public Pais Pais;
     
