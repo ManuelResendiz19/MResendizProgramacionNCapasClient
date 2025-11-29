@@ -1,5 +1,6 @@
 package com.MResendizProgramacionNCapas.Controller;
 
+import com.MResendizProgramacionNCapas.DTO.LoginRequest;
 import com.MResendizProgramacionNCapas.ML.Colonia;
 import com.MResendizProgramacionNCapas.ML.Direccion;
 import com.MResendizProgramacionNCapas.ML.Estado;
@@ -29,6 +30,7 @@ import java.util.logging.Logger;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -173,69 +175,43 @@ public class UsuarioController {
             model.addAttribute("Rols", resultRol.object);
         }
 
-        
-////        if (!usuario.getDirecciones().isEmpty()) {
-////        Direccion dir = usuario.getDirecciones().get(0);
-////
-////        
-////        if (dir.getColonia().getMunicipio().getEstado().getPais().getIdPais() > 0) {
-////            ResponseEntity<Result<List<Estado>>> responseEstados = restTemplate.exchange(
-////                    urlBase + "/api/estado/" + dir.getColonia().getMunicipio().getEstado().getPais().getIdPais(),
-////                    HttpMethod.GET,
-////                    HttpEntity.EMPTY,
-////                    new ParameterizedTypeReference<Result<List<Estado>>>() {});
-////            
-////            if (responseEstados.getStatusCode().is2xxSuccessful()) {
-////                Result resultEstado = responseEstados.getBody();
-////                model.addAttribute("estados", resultEstado.object);
-////            }
-////
-////            
-////            if (dir.getColonia().getMunicipio().getEstado().getIdEstado() > 0) {
-////                ResponseEntity<Result<List<Municipio>>> responseMunicipios = restTemplate.exchange(
-////                        urlBase + "/api/municipio/" + dir.getColonia().getMunicipio().getEstado().getIdEstado(),
-////                        HttpMethod.GET,
-////                        HttpEntity.EMPTY,
-////                        new ParameterizedTypeReference<Result<List<Municipio>>>() {}
-////                );
-////                if (responseMunicipios.getStatusCode().is2xxSuccessful()) {
-////                    Result resultMunicipio = responseMunicipios.getBody();
-////                    model.addAttribute("municipios", resultMunicipio.object);
-////                }
-////
-////                
-////                if (dir.getColonia().getMunicipio().getIdMunicipio() > 0) {
-////                    ResponseEntity<Result<List<Colonia>>> responseColonias = restTemplate.exchange(
-////                            urlBase + "/api/colonia/" + dir.getColonia().getMunicipio().getIdMunicipio(),
-////                            HttpMethod.GET,
-////                            HttpEntity.EMPTY,
-////                            new ParameterizedTypeReference<Result<List<Colonia>>>() {}
-////                    );
-////                    if (responseColonias.getStatusCode().is2xxSuccessful()) {
-////                        Result resultColonia = responseColonias.getBody();
-////                        model.addAttribute("colonias", resultColonia.object);
-////                    }
-////                }
-////            }
-////        }
-////    }
-//      
-//        Direccion direccion = usuario.Direcciones.get(0);
-//        direccion.Colonia.setIdColonia(usuario.Direcciones.get(0).Colonia.getIdColonia());
-//        direccion.(usuario.Direcciones.get(0).Colonia.getIdColonia());
-
         HttpEntity<Usuario> usuarioDirec = new HttpEntity<>(usuario);
         ResponseEntity<Usuario> responseEntityDi = restTemplate.exchange(urlBase + "/api/usuario/add", 
                 HttpMethod.POST, usuarioDirec, new ParameterizedTypeReference<Usuario>(){
                 });
-
-         
-//        HttpEntity<Usuario> usuarioEntity = new HttpEntity<>(usuario);
-//        ResponseEntity<Usuario> responseEntity = restTemplate.exchange(urlBase + "/api/usuario/add",
-//                HttpMethod.POST, usuarioEntity, new ParameterizedTypeReference<Usuario>() {
-//        });
-
+        
         return "redirect:/usuario";
-    } 
+    }
+
+    @GetMapping("/login")
+    public String loginForm(Model model) {
+        model.addAttribute("loginRequest", new LoginRequest()); 
+        return "LoginForm"; 
+    }
+    
+    @PostMapping("/login")
+    public String Login(@ModelAttribute LoginRequest loginRequest, HttpSession session, Model model) {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpEntity<LoginRequest> request = new HttpEntity<>(loginRequest);
+
+        ResponseEntity<Usuario> response = restTemplate.postForEntity(urlBase + "/api/auth/login", loginRequest, Usuario.class);
+
+        session.setAttribute("usuario", response.getBody());
+        
+        Usuario usuario = response.getBody();
+        if(usuario == null){
+            model.addAttribute("error", "Usuario o contraseña incorrectos");
+        return "LoginForm";
+        }
+        
+        
+//        String rol = usuario.getRol();
+//       if ("ADMIN".equalsIgnoreCase(rol)) {
+//            return "redirect:/usuario";
+//        } else {
+//            return "redirect:/detail";
+//        }
+        return "redirect:/usuario";
+    }
     
 }
