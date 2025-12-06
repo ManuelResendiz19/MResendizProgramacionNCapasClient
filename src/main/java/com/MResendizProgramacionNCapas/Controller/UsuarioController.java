@@ -1,6 +1,7 @@
 package com.MResendizProgramacionNCapas.Controller;
 
 import com.MResendizProgramacionNCapas.DTO.LoginRequest;
+import com.MResendizProgramacionNCapas.DTO.LoginResponse;
 import com.MResendizProgramacionNCapas.ML.Colonia;
 import com.MResendizProgramacionNCapas.ML.Direccion;
 import com.MResendizProgramacionNCapas.ML.Estado;
@@ -27,8 +28,10 @@ import java.util.Base64;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.codehaus.groovy.runtime.metaclass.MetaMethodIndex;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,11 +57,15 @@ public class UsuarioController {
     private static final String urlBase= "http://localhost:8080";
 
     @GetMapping
-    public String Index(Model model){
+    public String Index(Model model, HttpSession session){
         
         RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders header = new HttpHeaders();
+        header.set("Authorization", "Bearer "+session.getAttribute("token").toString());
+        HttpEntity<String> entity = new HttpEntity<>(null,header) ;
+        
         ResponseEntity<Result<List<Usuario>>> responseEntity = restTemplate.exchange(urlBase + "/api/usuario", HttpMethod.GET
-        ,HttpEntity.EMPTY, 
+        ,entity, 
         new ParameterizedTypeReference<Result<List<Usuario>>>() {});
         
         if(responseEntity.getStatusCode().value() == 200){
@@ -96,10 +103,14 @@ public class UsuarioController {
     
     
     @GetMapping("/detail/{IdUsuario}")
-    public String Detail(@PathVariable("IdUsuario") int IdUsuario, Model model) {
+    public String Detail(@PathVariable("IdUsuario") int IdUsuario, Model model,  HttpSession session) {
         RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders header = new HttpHeaders();
+        header.set("Authorization", "Bearer "+ session.getAttribute("token").toString());
+        HttpEntity<String> entity = new HttpEntity<>(null,header) ;
+        
         ResponseEntity <Result<Usuario>> responseEntity = restTemplate.exchange(urlBase + "/api/usuario/" + IdUsuario, HttpMethod.GET
-        ,HttpEntity.EMPTY, 
+        ,entity, 
         new ParameterizedTypeReference<Result<Usuario>>() {});
         
         if(responseEntity.getStatusCode().value() == 200){
@@ -183,6 +194,9 @@ public class UsuarioController {
         return "redirect:/usuario";
     }
 
+    
+    
+    
     @GetMapping("/login")
     public String loginForm(Model model) {
         model.addAttribute("loginRequest", new LoginRequest()); 
@@ -194,24 +208,28 @@ public class UsuarioController {
         RestTemplate restTemplate = new RestTemplate();
         HttpEntity<LoginRequest> request = new HttpEntity<>(loginRequest);
 
-        ResponseEntity<Usuario> response = restTemplate.postForEntity(urlBase + "/api/auth/login", loginRequest, Usuario.class);
+        ResponseEntity<LoginResponse> response = restTemplate.postForEntity(urlBase + "/api/auth/login", loginRequest, LoginResponse.class);
 
         session.setAttribute("usuario", response.getBody());
         
-        Usuario usuario = response.getBody();
+        LoginResponse usuario = response.getBody();
         if(usuario == null){
             model.addAttribute("error", "Usuario o contraseña incorrectos");
         return "LoginForm";
         }
         
+        System.out.println(usuario.getToken());
+        session.setAttribute("token",usuario.getToken());
         
-//        String rol = usuario.getRol();
-//       if ("ADMIN".equalsIgnoreCase(rol)) {
-//            return "redirect:/usuario";
-//        } else {
-//            return "redirect:/detail";
-//        }
-        return "redirect:/usuario";
+        String rol = usuario.getRol();
+        
+        if(rol.equals("ADMIN")){
+                return "redirect:/usuario";
+        }else if(rol.equals("SUPERVISOR") || rol.equals("USUARIO") || rol.equals("CLIENTE")){
+            return "redirect:/usuario/detail";
+        }
+        
+         return "LoginForm";
     }
     
 }
