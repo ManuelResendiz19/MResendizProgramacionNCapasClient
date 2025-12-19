@@ -34,6 +34,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -61,7 +62,7 @@ public class UsuarioController {
         
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders header = new HttpHeaders();
-        header.set("Authorization", "Bearer "+session.getAttribute("token").toString());
+        header.set("Authorization", "Bearer "+ session.getAttribute("token").toString());
         HttpEntity<String> entity = new HttpEntity<>(null,header) ;
         
         ResponseEntity<Result<List<Usuario>>> responseEntity = restTemplate.exchange(urlBase + "/api/usuario", HttpMethod.GET
@@ -137,17 +138,20 @@ public class UsuarioController {
     }
     
     @GetMapping("/add")
-    public String Form(Model model){
+    public String Form(Model model,  HttpSession session){
         
         Usuario usuario = new Usuario();
         usuario.Rol = new Rol();
       
         model.addAttribute("Usuario", usuario);
         
+        HttpHeaders header = new HttpHeaders();
+        header.set("Authorization", "Bearer "+ session.getAttribute("token").toString());
+        HttpEntity<String> entity = new HttpEntity<>(null,header) ;
         
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<Result<List<Pais>>> responseEntityP = restTemplate.exchange(urlBase + "/api/pais" , 
-                HttpMethod.GET, HttpEntity.EMPTY, new ParameterizedTypeReference<Result<List<Pais>>>() {
+                HttpMethod.GET, entity, new ParameterizedTypeReference<Result<List<Pais>>>() {
         });
         
         if(responseEntityP.getStatusCode().value() == 200){
@@ -156,15 +160,14 @@ public class UsuarioController {
         }
         
         ResponseEntity<Result<List<Rol>>> responseEntityR = restTemplate.exchange(urlBase + "/api/rol" , 
-                HttpMethod.GET, HttpEntity.EMPTY, new ParameterizedTypeReference<Result<List<Rol>>>() {
+                HttpMethod.GET, entity, new ParameterizedTypeReference<Result<List<Rol>>>() {
         });
         
         if(responseEntityR.getStatusCode().value() == 200){
             Result resultRol = (Result) responseEntityR.getBody();
             model.addAttribute("Rols", resultRol.object);
         }
-        
-
+       
         return "UsuarioForm";
     }
     
@@ -206,9 +209,13 @@ public class UsuarioController {
     @PostMapping("/login")
     public String Login(@ModelAttribute LoginRequest loginRequest, HttpSession session, Model model) {
         RestTemplate restTemplate = new RestTemplate();
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        
         HttpEntity<LoginRequest> request = new HttpEntity<>(loginRequest);
 
-        ResponseEntity<LoginResponse> response = restTemplate.postForEntity(urlBase + "/api/auth/login", loginRequest, LoginResponse.class);
+        ResponseEntity<LoginResponse> response = restTemplate.postForEntity(urlBase + "/api/auth/login", request, LoginResponse.class);
 
         session.setAttribute("usuario", response.getBody());
         
@@ -231,5 +238,16 @@ public class UsuarioController {
         
          return "LoginForm";
     }
+    
+    
+//    @PostMapping("/email")
+//    public String Email(){
+//        
+//        RestTemplate restTemplate = new RestTemplate();
+//        ResponseEntity <String> entity = restTemplate.exchange(urlBase + "/api/email/verification", 
+//                HttpMethod.POST, HttpEntity.EMPTY, ParameterizedTypeReference.forType(<String>));
+//        
+//        return "Email";
+//    }
     
 }
