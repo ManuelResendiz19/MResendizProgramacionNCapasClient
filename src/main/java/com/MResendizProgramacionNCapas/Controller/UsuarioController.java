@@ -26,6 +26,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.codehaus.groovy.runtime.metaclass.MetaMethodIndex;
@@ -36,6 +37,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -55,150 +58,162 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("usuario")// define la ruta base del controlador 
 public class UsuarioController {
 
-    private static final String urlBase= "http://localhost:8080";
+    private static final String urlBase = "http://localhost:8080";
 
     @GetMapping
-    public String Index(Model model, HttpSession session){
-        
+    public String Index(Model model, HttpSession session) {
+
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders header = new HttpHeaders();
-        header.set("Authorization", "Bearer "+ session.getAttribute("token").toString());
-        HttpEntity<String> entity = new HttpEntity<>(null,header) ;
-        
-        ResponseEntity<Result<List<Usuario>>> responseEntity = restTemplate.exchange(urlBase + "/api/usuario", HttpMethod.GET
-        ,entity, 
-        new ParameterizedTypeReference<Result<List<Usuario>>>() {});
-        
-        if(responseEntity.getStatusCode().value() == 200){
+        header.set("Authorization", "Bearer " + session.getAttribute("token").toString());
+        HttpEntity<String> entity = new HttpEntity<>(null, header);
+
+        ResponseEntity<Result<List<Usuario>>> responseEntity = restTemplate.exchange(urlBase + "/api/usuario", HttpMethod.GET,
+                 entity,
+                new ParameterizedTypeReference<Result<List<Usuario>>>() {
+        });
+
+        if (responseEntity.getStatusCode().value() == 200) {
             Result<List<Usuario>> result = responseEntity.getBody();
             model.addAttribute("usuarios", result.object);
             model.addAttribute("usuarioBusqueda", new Usuario());
-        }  
-    
-        
+        }
+
         return "UsuarioIndex";
     }
-    
+
     @PostMapping("/usuarioSearch")
-    public String Index(@ModelAttribute Usuario usuario,Model model){
-        
+    public String Index(@ModelAttribute Usuario usuario, Model model) {
+
         model.addAttribute("usuarioBusqueda", new Usuario());
-        
+
         String busqueda = usuario.getNombre();
-        
+
         RestTemplate restTemplate = new RestTemplate();
         HttpEntity<Usuario> requeEntity = new HttpEntity<>(usuario);
-        
-        ResponseEntity<Result<List<Usuario>>> responseEntity = restTemplate.exchange(urlBase + "/api/usuario/busqueda?busqueda=" + busqueda , HttpMethod.GET
-        ,requeEntity, 
-        new ParameterizedTypeReference<Result<List<Usuario>>>() {});
-        
-        if(responseEntity.getStatusCode().value() == 200){
+
+        ResponseEntity<Result<List<Usuario>>> responseEntity = restTemplate.exchange(urlBase + "/api/usuario/busqueda?busqueda=" + busqueda, HttpMethod.GET,
+                 requeEntity,
+                new ParameterizedTypeReference<Result<List<Usuario>>>() {
+        });
+
+        if (responseEntity.getStatusCode().value() == 200) {
             Result<List<Usuario>> result = responseEntity.getBody();
             model.addAttribute("usuarios", result.object);
-        }  
-        
-        
+        }
+
         return "UsuarioIndex";
     }
-    
-    
+
     @GetMapping("/detail/{IdUsuario}")
-    public String Detail(@PathVariable("IdUsuario") int IdUsuario, Model model,  HttpSession session) {
+    public String Detail(@PathVariable("IdUsuario") int IdUsuario, Model model, HttpSession session) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders header = new HttpHeaders();
-        header.set("Authorization", "Bearer "+ session.getAttribute("token").toString());
-        HttpEntity<String> entity = new HttpEntity<>(null,header) ;
-        
-        ResponseEntity <Result<Usuario>> responseEntity = restTemplate.exchange(urlBase + "/api/usuario/" + IdUsuario, HttpMethod.GET
-        ,entity, 
-        new ParameterizedTypeReference<Result<Usuario>>() {});
-        
-        if(responseEntity.getStatusCode().value() == 200){
+        header.set("Authorization", "Bearer " + session.getAttribute("token").toString());
+        HttpEntity<String> entity = new HttpEntity<>(null, header);
+
+        ResponseEntity<Result<Usuario>> responseEntity = restTemplate.exchange(urlBase + "/api/usuario/" + IdUsuario, HttpMethod.GET,
+                 entity,
+                new ParameterizedTypeReference<Result<Usuario>>() {
+        });
+
+        if (responseEntity.getStatusCode().value() == 200) {
             Result<Usuario> result = responseEntity.getBody();
             model.addAttribute("usuario", result.object);
         }
-        
-        
+
         return "UsuarioDetail";
     }
 
-    
-   @PostMapping("/detail")
-    public String Detail(@ModelAttribute Usuario usuario){
+    @PostMapping("/detail")
+    public String Detail(@ModelAttribute Usuario usuario) {
         RestTemplate restTemplate = new RestTemplate();
-        
+
         HttpEntity<Usuario> requeEntity = new HttpEntity<>(usuario);
-        
-        ResponseEntity <Result<Usuario>> responseEntity = restTemplate.exchange(urlBase + "/api/usuario/update", HttpMethod.PUT, 
+
+        ResponseEntity<Result<Usuario>> responseEntity = restTemplate.exchange(urlBase + "/api/usuario/update", HttpMethod.PUT,
                 requeEntity, new ParameterizedTypeReference<Result<Usuario>>() {
-                });
-        
+        });
+
         return "redirect:/usuario/detail/" + usuario.getIdUsuario();
     }
-    
+
     @GetMapping("/add")
-    public String Form(Model model,  HttpSession session){
-        
+    public String Form(Model model, HttpSession session) {
+
         Usuario usuario = new Usuario();
         usuario.Rol = new Rol();
-      
+
         model.addAttribute("Usuario", usuario);
+
+        String token = (String) session.getAttribute("token");
+        model.addAttribute("token", token);
         
         HttpHeaders header = new HttpHeaders();
-        header.set("Authorization", "Bearer "+ session.getAttribute("token").toString());
-        HttpEntity<String> entity = new HttpEntity<>(null,header) ;
-        
+        header.set("Authorization", "Bearer " + session.getAttribute("token").toString());
+        HttpEntity<String> entity = new HttpEntity<>(null, header);
+
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<Result<List<Pais>>> responseEntityP = restTemplate.exchange(urlBase + "/api/pais" , 
+        ResponseEntity<Result<List<Pais>>> responseEntityP = restTemplate.exchange(urlBase + "/api/pais",
                 HttpMethod.GET, entity, new ParameterizedTypeReference<Result<List<Pais>>>() {
         });
-        
-        if(responseEntityP.getStatusCode().value() == 200){
+
+        if (responseEntityP.getStatusCode().value() == 200) {
             Result resultPais = (Result) responseEntityP.getBody();
             model.addAttribute("pais", resultPais.object);
         }
-        
-        ResponseEntity<Result<List<Rol>>> responseEntityR = restTemplate.exchange(urlBase + "/api/rol" , 
+
+        ResponseEntity<Result<List<Rol>>> responseEntityR = restTemplate.exchange(urlBase + "/api/rol",
                 HttpMethod.GET, entity, new ParameterizedTypeReference<Result<List<Rol>>>() {
         });
-        
-        if(responseEntityR.getStatusCode().value() == 200){
+
+        if (responseEntityR.getStatusCode().value() == 200) {
             Result resultRol = (Result) responseEntityR.getBody();
             model.addAttribute("Rols", resultRol.object);
         }
-       
+
         return "UsuarioForm";
     }
-    
-    
+
     @PostMapping("/add")
     public String Form(@ModelAttribute("usuario") Usuario usuario,
-            BindingResult bindingResult, Model model) {
+            BindingResult bindingResult, Model model, HttpSession session) {
         RestTemplate restTemplate = new RestTemplate();
 
+        HttpHeaders header = new HttpHeaders();
+        header.set("Authorization", "Bearer " + session.getAttribute("token").toString());
+        HttpEntity<String> entity = new HttpEntity<>(null, header);
+        
         ResponseEntity<Result<List<Rol>>> responseRoles = restTemplate.exchange(
                 urlBase + "/api/rol",
                 HttpMethod.GET,
-                HttpEntity.EMPTY,
+                entity,
                 new ParameterizedTypeReference<Result<List<Rol>>>() {
         });
-        
+
         if (responseRoles.getStatusCode().is2xxSuccessful()) {
             Result resultRol = responseRoles.getBody();
             model.addAttribute("Rols", resultRol.object);
         }
 
         HttpEntity<Usuario> usuarioDirec = new HttpEntity<>(usuario);
-        ResponseEntity<Usuario> responseEntityDi = restTemplate.exchange(urlBase + "/api/usuario/add", 
-                HttpMethod.POST, usuarioDirec, new ParameterizedTypeReference<Usuario>(){
-                });
-        
+        ResponseEntity<Usuario> responseEntityDi = restTemplate.exchange(urlBase + "/api/usuario/add",
+                HttpMethod.POST, usuarioDirec, new ParameterizedTypeReference<Usuario>() {
+        });
+
+        HttpHeaders emailHeaders = new HttpHeaders();
+        emailHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.add("to", "manuelresendiz19062003@gmail.com"); // tu correo
+
+        HttpEntity<MultiValueMap<String, String>> emailRequest = new HttpEntity<>(map, emailHeaders);
+
+        restTemplate.postForEntity(urlBase + "/api/email/registro", emailRequest, String.class);
+
         return "redirect:/usuario";
     }
 
-    
-    
     
     @GetMapping("/login")
     public String loginForm(Model model) {
@@ -227,6 +242,7 @@ public class UsuarioController {
         
         System.out.println(usuario.getToken());
         session.setAttribute("token",usuario.getToken());
+
         
         String rol = usuario.getRol();
         
@@ -239,6 +255,20 @@ public class UsuarioController {
          return "LoginForm";
     }
     
+    @GetMapping("/VerificationEmail")
+    public String showVerificationPage(Model model, HttpSession session) {
+
+        // Puedes obtener el email del usuario desde sesión
+        String email = (String) session.getAttribute("userEmail");
+        if (email == null) {
+            email = "tu correo electrónico"; // valor por defecto
+        }
+
+        model.addAttribute("emailMessage", "Correo de verificación enviado a: " + email);
+
+        // Thymeleaf buscará el template: resources/templates/emailVerify.html
+        return "VerificationEmail";
+    }
     
 //    @PostMapping("/email")
 //    public String Email(){

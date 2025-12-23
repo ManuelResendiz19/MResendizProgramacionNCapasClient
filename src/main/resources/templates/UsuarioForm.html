@@ -141,7 +141,7 @@
                                     <option th:each="municipio : ${municipios}" th:value="${municipio.idMunicipio}" th:text="${municipio.nombre}"></option>
                                 </select>
                             </div>
-                            
+
                             <div class="col-md-4">
                                 <label class="form-label fw-semibold">Colonia</label>
                                 <select class="form-select" id="ddlcolonia" th:field="*{Direcciones[0].Colonia.idColonia}">
@@ -151,10 +151,10 @@
                             </div>
 
 
-                        <!-- Botón -->
-                        <div class="text-center mt-5">
-                            <button type="submit" class="btn btn-success px-5 py-2 fw-semibold">Agregar</button>
-                        </div>
+                            <!-- Botón -->
+                            <div class="text-center mt-5">
+                                <button type="submit" class="btn btn-success px-5 py-2 fw-semibold">Agregar</button>
+                            </div>
 
                     </form>
                 </div>
@@ -213,6 +213,14 @@
             }
 
         </style>
+
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            var jwtToken = /*[[${token}]]*/ '';
+            /*]]>*/
+            console.log("Token JWT:", jwtToken);
+        </script>
+
         <script>
 
             $(document).ready(function () {
@@ -233,6 +241,9 @@
                         type: 'GET',
                         url: "http://localhost:8080/api/pais",
                         dataType: "json",
+                        headers: {
+                            'Authorization': 'Bearer ' + jwtToken
+                        },
                         success: function (data) {
 
                             $("#ddlpais").empty();
@@ -258,6 +269,9 @@
                         type: 'GET',
                         url: "http://localhost:8080/api/estado/" + $("#ddlpais").val(),
                         dataType: "json",
+                        headers: {
+                            'Authorization': 'Bearer ' + jwtToken
+                        },
                         success: function (data) {
 
                             $("#ddlestado").empty();
@@ -277,6 +291,9 @@
                         type: 'GET',
                         url: "http://localhost:8080/api/municipio/" + $("#ddlestado").val(),
                         dataType: "json",
+                        headers: {
+                            'Authorization': 'Bearer ' + jwtToken
+                        },
                         success: function (data) {
 
                             $("#ddlmunicipio").empty();
@@ -296,6 +313,9 @@
                         type: 'GET',
                         url: "http://localhost:8080/api/colonia/" + $("#ddlmunicipio").val(),
                         dataType: "json",
+                        headers: {
+                            'Authorization': 'Bearer ' + jwtToken
+                        },
                         success: function (data) {
 
                             $("#ddlcolonia").empty();
