@@ -69,7 +69,7 @@ public class UsuarioController {
         HttpEntity<String> entity = new HttpEntity<>(null, header);
 
         ResponseEntity<Result<List<Usuario>>> responseEntity = restTemplate.exchange(urlBase + "/api/usuario", HttpMethod.GET,
-                 entity,
+                entity,
                 new ParameterizedTypeReference<Result<List<Usuario>>>() {
         });
 
@@ -93,7 +93,7 @@ public class UsuarioController {
         HttpEntity<Usuario> requeEntity = new HttpEntity<>(usuario);
 
         ResponseEntity<Result<List<Usuario>>> responseEntity = restTemplate.exchange(urlBase + "/api/usuario/busqueda?busqueda=" + busqueda, HttpMethod.GET,
-                 requeEntity,
+                requeEntity,
                 new ParameterizedTypeReference<Result<List<Usuario>>>() {
         });
 
@@ -113,7 +113,7 @@ public class UsuarioController {
         HttpEntity<String> entity = new HttpEntity<>(null, header);
 
         ResponseEntity<Result<Usuario>> responseEntity = restTemplate.exchange(urlBase + "/api/usuario/" + IdUsuario, HttpMethod.GET,
-                 entity,
+                entity,
                 new ParameterizedTypeReference<Result<Usuario>>() {
         });
 
@@ -148,7 +148,7 @@ public class UsuarioController {
 
         String token = (String) session.getAttribute("token");
         model.addAttribute("token", token);
-        
+
         HttpHeaders header = new HttpHeaders();
         header.set("Authorization", "Bearer " + session.getAttribute("token").toString());
         HttpEntity<String> entity = new HttpEntity<>(null, header);
@@ -177,13 +177,13 @@ public class UsuarioController {
 
     @PostMapping("/add")
     public String Form(@ModelAttribute("usuario") Usuario usuario,
-            BindingResult bindingResult, Model model, HttpSession session) {
+            BindingResult bindingResult, Model model, HttpSession session, RedirectAttributes redirectAttrs) {
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders header = new HttpHeaders();
         header.set("Authorization", "Bearer " + session.getAttribute("token").toString());
         HttpEntity<String> entity = new HttpEntity<>(null, header);
-        
+
         ResponseEntity<Result<List<Rol>>> responseRoles = restTemplate.exchange(
                 urlBase + "/api/rol",
                 HttpMethod.GET,
@@ -196,88 +196,84 @@ public class UsuarioController {
             model.addAttribute("Rols", resultRol.object);
         }
 
-        HttpEntity<Usuario> usuarioDirec = new HttpEntity<>(usuario);
-        ResponseEntity<Usuario> responseEntityDi = restTemplate.exchange(urlBase + "/api/usuario/add",
-                HttpMethod.POST, usuarioDirec, new ParameterizedTypeReference<Usuario>() {
+        HttpEntity<Usuario> usuarioDirec = new HttpEntity<>(usuario, header);
+        ResponseEntity<Result<Usuario>> responseEntityDi = restTemplate.exchange(urlBase + "/api/usuario/add",
+                HttpMethod.POST, usuarioDirec, new ParameterizedTypeReference<Result<Usuario>>() {
         });
 
         HttpHeaders emailHeaders = new HttpHeaders();
         emailHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
+        Result<Usuario> result = responseEntityDi.getBody();
+        Usuario use = null;
+
+        if (result != null && result.correct) {
+            use = result.object;  // Aquí obtienes el usuario creado con el Id correcto
+        }
+
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add("to", "manuelresendiz19062003@gmail.com"); // tu correo
+        map.add("to", "manuelresendiz19062003@gmail.com");
+        map.add("IdUsuario", String.valueOf(use.getIdUsuario()));
 
         HttpEntity<MultiValueMap<String, String>> emailRequest = new HttpEntity<>(map, emailHeaders);
 
         restTemplate.postForEntity(urlBase + "/api/email/registro", emailRequest, String.class);
 
+        redirectAttrs.addAttribute("success", "true");
         return "redirect:/usuario";
     }
 
-    
     @GetMapping("/login")
     public String loginForm(Model model) {
-        model.addAttribute("loginRequest", new LoginRequest()); 
-        return "LoginForm"; 
+        model.addAttribute("loginRequest", new LoginRequest());
+        return "LoginForm";
     }
-    
+
     @PostMapping("/login")
     public String Login(@ModelAttribute LoginRequest loginRequest, HttpSession session, Model model) {
         RestTemplate restTemplate = new RestTemplate();
-        
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        
+
         HttpEntity<LoginRequest> request = new HttpEntity<>(loginRequest);
 
         ResponseEntity<LoginResponse> response = restTemplate.postForEntity(urlBase + "/api/auth/login", request, LoginResponse.class);
 
         session.setAttribute("usuario", response.getBody());
-        
-        LoginResponse usuario = response.getBody();
-        if(usuario == null){
-            model.addAttribute("error", "Usuario o contraseña incorrectos");
-        return "LoginForm";
-        }
-        
-        System.out.println(usuario.getToken());
-        session.setAttribute("token",usuario.getToken());
 
-        
+        LoginResponse usuario = response.getBody();
+        if (usuario == null) {
+            model.addAttribute("error", "Usuario o contraseña incorrectos");
+            return "LoginForm";
+        }
+
+        System.out.println(usuario.getToken());
+        session.setAttribute("token", usuario.getToken());
+
         String rol = usuario.getRol();
-        
-        if(rol.equals("ADMIN")){
-                return "redirect:/usuario";
-        }else if(rol.equals("SUPERVISOR") || rol.equals("USUARIO") || rol.equals("CLIENTE")){
+
+        if (rol.equals("ADMIN")) {
+            return "redirect:/usuario";
+        } else if (rol.equals("SUPERVISOR") || rol.equals("USUARIO") || rol.equals("CLIENTE")) {
             return "redirect:/usuario/detail";
         }
-        
-         return "LoginForm";
-    }
-    
-    @GetMapping("/VerificationEmail")
-    public String showVerificationPage(Model model, HttpSession session) {
 
-        // Puedes obtener el email del usuario desde sesión
+        return "LoginForm";
+    }
+
+    @GetMapping("/VerificationEmail")
+    public String Verification(@RequestParam("token") String token, Model model, HttpSession session) {
+
+        model.addAttribute("token", token);
+
         String email = (String) session.getAttribute("userEmail");
         if (email == null) {
-            email = "tu correo electrónico"; // valor por defecto
+            email = "manuelresendiz19062003@gmail.com";
         }
 
         model.addAttribute("emailMessage", "Correo de verificación enviado a: " + email);
-
-        // Thymeleaf buscará el template: resources/templates/emailVerify.html
         return "VerificationEmail";
     }
-    
-//    @PostMapping("/email")
-//    public String Email(){
-//        
-//        RestTemplate restTemplate = new RestTemplate();
-//        ResponseEntity <String> entity = restTemplate.exchange(urlBase + "/api/email/verification", 
-//                HttpMethod.POST, HttpEntity.EMPTY, ParameterizedTypeReference.forType(<String>));
-//        
-//        return "Email";
-//    }
-    
+
 }

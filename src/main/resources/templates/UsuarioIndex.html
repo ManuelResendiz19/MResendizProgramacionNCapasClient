@@ -84,6 +84,16 @@
             </table>
         </div>
     </div>
-
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('success') === 'true') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Éxito!',
+                        text: 'El usuario se agregó correctamente',
+                        confirmButtonText: 'Aceptar'
+                    });
+                }
+    </script>
 </body>
 </html>
